@@ -1,0 +1,35 @@
+// src/styles/index.scss
+
+
+// sidebar
+$menuText:#bfcbd9;
+$menuActiveText:#f7b10c;
+$subMenuActiveText:#f4f4f5;
+$menuActiveBg: #2c3e50; /*#333333;*/
+
+$menuBg: #2c3e50;            /*#304156;*/
+$menuHover:#263445;
+
+$subMenuBg:#1f2d3d;
+$subMenuHover:#001528;
+
+$sideBarWidth: 210px;
+
+$tagActiveBg: #f7b10c; /* Fondo naranja */
+$tagActiveText: #ffffff; /* Texto blanco */
+
+
+:export {
+  menuText: $menuText;
+  menuActiveText: $menuActiveText;
+  subMenuActiveText: $subMenuActiveText;
+  menuBg: $menuBg;
+  menuHover: $menuHover;
+  subMenuBg: $subMenuBg;
+  subMenuHover: $subMenuHover;
+  sideBarWidth: $sideBarWidth;
+
+  tagActiveBg:$tagActiveBg;
+  tagActiveText:$tagActiveText;
+
+}
