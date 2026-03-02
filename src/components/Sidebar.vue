@@ -176,6 +176,18 @@
           <el-menu-item index="/mantenimiento/medicamentos">Productos</el-menu-item>
           <el-menu-item index="/mantenimiento/formafarmaceutica">Unidad</el-menu-item>
           <el-menu-item index="/mantenimiento/servicios-personal">Personal del Servicio</el-menu-item>
+          <el-menu-item
+            v-if="hasPermission('manage_users')"
+            index="/mantenimiento/usuarios"
+          >Usuarios</el-menu-item>
+          <el-menu-item
+            v-if="hasPermission('manage_roles')"
+            index="/mantenimiento/roles"
+          >Roles</el-menu-item>
+          <el-menu-item
+            v-if="hasPermission('manage_permissions')"
+            index="/mantenimiento/permisos"
+          >Permisos</el-menu-item>
         </el-menu-item-group>
       </el-sub-menu>
     </el-menu>
@@ -185,6 +197,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { usePermission } from '@/composables/usePermission.js'
 import {
   HomeFilled, Location, Document, Setting, Box,
   List,           // ⬅️ NUEVOS iconos
@@ -197,6 +210,8 @@ import {
 
 
 const activeMenu = ref(useRoute().path)
+
+const { hasPermission } = usePermission()
 
 const props = defineProps({
   isOpen: {

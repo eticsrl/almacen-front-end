@@ -27,8 +27,13 @@ import ReingresosRecetaView from '@/components/report/ReingresosRecetas.vue'
 import kardexPorFechaView from '@/components/report/Kardex.vue'
 import MedicamentosPorPacienteView from '@/components/report/MedicamentosPorPaciente.vue'
 import ServicePersonalsView from '@/views/ServicePersonals.vue'
+import Register from '@/views/Register.vue'
+import Roles from '@/views/Roles.vue'
+import Permissions from '@/views/Permissions.vue'
+import Users from '@/views/Users.vue'
 
 import { useUserStore } from '@/stores/userStore.js'
+import { usePermission } from '@/composables/usePermission.js'
 
 const routes = [
   {
@@ -137,6 +142,9 @@ const routes = [
           { path: 'medicamentos', name: 'Medicamentos', component: Medicamentos },
           { path: 'formafarmaceutica', name: 'FormaFarmaceutica', component: FormaFarmaceutica },
           { path: 'servicios-personal', name: 'ServiciosPersonal', component: ServicePersonalsView },
+          { path: 'usuarios', name: 'Usuarios', component: Users, meta: { requiredPermission: 'manage_users' } },
+          { path: 'roles', name: 'Roles', component: Roles, meta: { requiredPermission: 'manage_roles' } },
+          { path: 'permisos', name: 'Permisos', component: Permissions, meta: { requiredPermission: 'manage_permissions' } },
         ]
       },
   
@@ -148,6 +156,11 @@ const routes = [
     name: 'Login',
     component: Login
   },
+  {
+    path: '/register',
+    name: 'Register',
+    component: Register
+  },
 
 ]
 
@@ -158,12 +171,28 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
+  const { hasPermission, hasRole } = usePermission()
 
   if (to.meta.requiresAuth && !userStore.token) {
     next('/login')
-  } else {
-    next()
+    return
   }
+
+  if (to.meta.requiredPermission) {
+    if (!hasPermission(to.meta.requiredPermission)) {
+      next('/')
+      return
+    }
+  }
+
+  if (to.meta.requiredRole) {
+    if (!hasRole(to.meta.requiredRole)) {
+      next('/')
+      return
+    }
+  }
+
+  next()
 })
 
 

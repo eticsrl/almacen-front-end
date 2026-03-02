@@ -31,6 +31,11 @@
             </el-button>
           </el-form-item>
         </el-form>
+        
+        <div class="register-link">
+          ¿No tienes cuenta? 
+          <router-link to="/register">Crea una aquí</router-link>
+        </div>
       </div>
     </div>
   </template>
@@ -185,6 +190,22 @@
   .login-button:hover {
     background-color: #2980b9;
     border-color: #2980b9;
+  }
+
+  .register-link {
+    margin-top: 15px;
+    font-size: 13px;
+    color: #ccc;
+    
+    a {
+      color: #f7b10c;
+      text-decoration: none;
+      font-weight: 600;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
   </style>
   

@@ -30,12 +30,13 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  //  Fetch del usuario desde backend si hay token
+  //  Fetch del usuario desde backend si hay token (incluye permisos y roles)
   const fetchUser = async () => {
     try {
       const response = await userService.getProfile()
       user.value = response.data.user
-      localStorage.setItem('user', JSON.stringify(user.value)) 
+      localStorage.setItem('user', JSON.stringify(user.value))
+      console.log('Perfil del usuario cargado con permisos y roles:', user.value)
     } catch (error) {
       console.error('Error cargando perfil de usuario:', error)
     }
@@ -56,12 +57,32 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  // Register: crea nuevo usuario
+  const register = async (userData) => {
+    loading.value = true
+    try {
+      const response = await userService.register(userData)
+      token.value = response.data.token
+      user.value = response.data.user
+     
+      localStorage.setItem('token', token.value)
+      localStorage.setItem('user', JSON.stringify(user.value))
+      
+      console.log('Usuario registrado exitosamente:', user.value)
+    } catch (error) {
+      throw error
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     user,
     token,
     loading,
     login,
     logout,
+    register,
     fetchUser
   }
 })
