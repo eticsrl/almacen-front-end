@@ -7,6 +7,7 @@ import Categorias from '@/views/Categories.vue'
 import TipoDocumentos from '@/views/DocumentTypes.vue'
 import Medicamentos from '@/views/Medicines.vue'
 import MedicinesEntity from '@/views/MedicinesEntity.vue'
+import Entities from '@/views/Entities.vue'
 import Inventario from '@/views/Inventory.vue'
 import IngresosView from '@/views/Ingresos.vue'
 import Proveedores from '@/views/Suppliers.vue'
@@ -132,6 +133,16 @@ const routes = [
         ]
       },
       {
+        path: '/usuariosSystem',
+        name: 'UsuariosSystem',
+        component: RouterView, // Cambiado para usar RouterView directamente
+        children: [
+          { path: 'usuarios', name: 'Usuarios', component: Users, meta: { requiredPermission: 'manage_users' } },
+          { path: 'roles', name: 'Roles', component: Roles, meta: { requiredPermission: 'manage_roles' } },
+          { path: 'permisos', name: 'Permisos', component: Permissions, meta: { requiredPermission: 'manage_permissions' } },
+        ]
+      },
+      {
         path: '/mantenimiento',
         name: 'Mantenimiento',
         component: RouterView, // Cambiado para usar RouterView directamente
@@ -142,9 +153,8 @@ const routes = [
           { path: 'medicamentos', name: 'Medicamentos', component: Medicamentos },
           { path: 'formafarmaceutica', name: 'FormaFarmaceutica', component: FormaFarmaceutica },
           { path: 'servicios-personal', name: 'ServiciosPersonal', component: ServicePersonalsView },
-          { path: 'usuarios', name: 'Usuarios', component: Users, meta: { requiredPermission: 'manage_users' } },
-          { path: 'roles', name: 'Roles', component: Roles, meta: { requiredPermission: 'manage_roles' } },
-          { path: 'permisos', name: 'Permisos', component: Permissions, meta: { requiredPermission: 'manage_permissions' } },
+          { path: 'entidades', name: 'Entidades', component: Entities, meta: { requiredPermission: 'manage_entities' } },
+          { path: 'variables-configuracion', name: 'VariablesConfiguracion', component: () => import('@/views/VariablesConfiguracion.vue') },
         ]
       },
   

@@ -12,9 +12,45 @@ export const useEntityStore = defineStore('entity', () => {
     try {
       const response = await entityService.getAll(params)
       entities.value = response.data.data
-      total.value = response.data.meta.total
+      total.value = response.data.meta?.total || entities.value.length
+    } catch (err) {
+      console.error('Error fetching entities:', err)
     } finally {
       loading.value = false
+    }
+  }
+
+  const createEntity = async (payload) => {
+    try {
+      const response = await entityService.create(payload)
+      entities.value.unshift(response.data.data || response.data)
+      return response.data.data
+    } catch (err) {
+      console.error('Error creating entity:', err)
+      throw err
+    }
+  }
+
+  const updateEntity = async (id, payload) => {
+    try {
+      const response = await entityService.update(id, payload)
+      const updated = response.data.data || response.data
+      const index = entities.value.findIndex(e => e.id === id)
+      if (index !== -1) entities.value[index] = updated
+      return updated
+    } catch (err) {
+      console.error('Error updating entity:', err)
+      throw err
+    }
+  }
+
+  const deleteEntity = async (id) => {
+    try {
+      await entityService.remove(id)
+      entities.value = entities.value.filter(e => e.id !== id)
+    } catch (err) {
+      console.error('Error deleting entity:', err)
+      throw err
     }
   }
 
@@ -23,5 +59,8 @@ export const useEntityStore = defineStore('entity', () => {
     total,
     loading,
     fetchEntities,
+    createEntity,
+    updateEntity,
+    deleteEntity
   }
 })

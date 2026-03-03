@@ -63,6 +63,35 @@
 
         </el-menu-item-group>
       </el-sub-menu>
+      <el-sub-menu index="5">
+        <template #title><el-icon>
+            <document />
+          </el-icon><span v-if="isOpen">Recetas</span></template>
+        <el-menu-item-group>
+          <el-menu-item index="/recetas/listado">
+            <el-icon>
+              <collection />
+            </el-icon>
+            <span v-if="isOpen">Egresos</span>
+          </el-menu-item>
+          <el-menu-item index="/recetas/dispensar">
+            <el-icon>
+              <collection />
+            </el-icon>
+            <span v-if="isOpen">Dispensar</span>
+          </el-menu-item>
+          <el-menu-item index="/recetas/reingresos">
+            <el-icon>
+              <list />
+            </el-icon>
+            <span v-if="isOpen">Reingreso</span>
+          </el-menu-item>
+          <el-menu-item index="/recetas/solicitudes">
+            <el-icon><edit-pen /></el-icon>
+            <span v-if="isOpen">Solicitudes</span>
+          </el-menu-item>
+        </el-menu-item-group>
+      </el-sub-menu>
       <el-sub-menu index="6">
         <template #title>
           <el-icon>
@@ -166,7 +195,6 @@
           <el-menu-item index="/mantenimiento/medicamentos">Productos</el-menu-item>
           <el-menu-item index="/mantenimiento/formafarmaceutica">Unidad</el-menu-item>
           <el-menu-item index="/mantenimiento/servicios-personal">Personal del Servicio</el-menu-item>
-          <el-menu-item v-if="hasPermission('manage_entities')" index="/mantenimiento/entidades">Entidades</el-menu-item>
           <el-menu-item index="/mantenimiento/variables-configuracion">Variables Configuración</el-menu-item>
         </el-menu-item-group>
       </el-sub-menu>
