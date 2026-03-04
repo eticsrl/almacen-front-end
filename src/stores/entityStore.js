@@ -11,6 +11,7 @@ export const useEntityStore = defineStore('entity', () => {
     loading.value = true
     try {
       const response = await entityService.getAll(params)
+      console.log('Fetched entities:', response.data)
       entities.value = response.data.data
       total.value = response.data.meta?.total || entities.value.length
     } catch (err) {

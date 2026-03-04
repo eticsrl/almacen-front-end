@@ -180,6 +180,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  console.log('router.beforeEach', to.fullPath, 'from', from.fullPath)
   const userStore = useUserStore()
   const { hasPermission, hasRole } = usePermission()
 
@@ -189,7 +190,9 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.meta.requiredPermission) {
-    if (!hasPermission(to.meta.requiredPermission)) {
+    const allowed = hasPermission(to.meta.requiredPermission)
+    console.log('  check permission', to.meta.requiredPermission, allowed)
+    if (!allowed) {
       next('/')
       return
     }

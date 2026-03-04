@@ -1,15 +1,20 @@
 <template>
   <div>
     <el-card>
+      <div class="row">
+        <div class="col sm-6">
+          <el-select v-model="filterCategory" placeholder="Seleccione una categoría" filterable clearable>
+            <el-option v-for="cat in categoryStore.categories" :key="cat.id" :label="cat.descripcion" :value="cat.id" />
+          </el-select>
+        </div>
+      </div>
       <div class="flex justify-between mb-4">
+
         <h2 class="text-lg font-bold">Tipos de Documentos</h2>
         <el-button type="primary" @click="showModal = true">Nuevo</el-button>
       </div>
 
-      <el-table :data="documentTypes"
-         v-loading="loading"
-         stripe border
-         style="width: 100%">
+      <el-table :data="documentTypes" v-loading="loading" stripe border style="width: 100%">
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="descripcion" label="Descripción" />
         <el-table-column prop="categoria" label="Categoria" />
@@ -26,21 +31,12 @@
       <el-dialog :title="editando ? 'Editar' : 'Nuevo'" v-model="showModal">
         <el-form :model="form" label-width="120px">
           <el-form-item label="Categoría" prop="categoria_id">
-          <el-select
-            v-model="form.categoria_id"
-            placeholder="Seleccione una categoría"
-            filterable
-            clearable
-          >
-            <el-option
-              v-for="cat in categoryStore.categories"
-              :key="cat.id"
-              :label="cat.descripcion"
-              :value="cat.id"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Descripción">
+            <el-select v-model="form.categoria_id" placeholder="Seleccione una categoría" filterable clearable>
+              <el-option v-for="cat in categoryStore.categories" :key="cat.id" :label="cat.descripcion"
+                :value="cat.id" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="Descripción">
             <el-input v-model="form.descripcion" />
           </el-form-item>
           <el-form-item label="Cod. Servicio">
@@ -57,7 +53,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useDocumentTypeStore } from '@/stores/documentTypeStore'
 
 import { useCategoryStore } from '@/stores/categoryStore'
@@ -65,25 +62,32 @@ import { useCategoryStore } from '@/stores/categoryStore'
 const store = useDocumentTypeStore()
 const categoryStore = useCategoryStore()
 
-const { documentTypes, fetchDocumentTypes, createDocumentType, updateDocumentType, deleteDocumentType, loading } = store
+const { documentTypes, loading } = storeToRefs(store)
+const { fetchDocumentTypes, createDocumentType, updateDocumentType, deleteDocumentType } = store
 
 const showModal = ref(false)
 const editando = ref(false)
 const form = ref({
   descripcion: '',
   cod_servicio: '',
-  //categoria_id: ''
-
   categoria_id: null,
-  //usr: '',
   estado_id: 28
-
 })
 const editingId = ref(null)
 
+// filter selector separate from the form used in the modal
+const filterCategory = ref(null)
+
 onMounted(() => {
-  fetchDocumentTypes()
+  console.log('[DocTypes] mounted fetch')
   categoryStore.fetchCategories()
+  // initial load, possibly with an existing filter
+  fetchDocumentTypes({ categoria_id: filterCategory.value })
+})
+
+// whenever the selected category changes reload the list from server
+watch(filterCategory, (val) => {
+  fetchDocumentTypes({ categoria_id: val })
 })
 
 const save = async () => {
@@ -93,6 +97,8 @@ const save = async () => {
     } else {
       await createDocumentType(form.value)
     }
+    // refresh list to honour current filter
+    await fetchDocumentTypes({ categoria_id: filterCategory.value })
     showModal.value = false
     reset()
   } catch (e) {
@@ -162,5 +168,3 @@ const reset = () => {
   font-size: 1.1rem;
 }
 </style>
-
-

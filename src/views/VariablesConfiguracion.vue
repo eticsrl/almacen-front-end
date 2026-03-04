@@ -7,7 +7,7 @@
       </div>
 
       <el-table
-        :data="store.items"
+        :data="items"
         stripe
         border
         style="width: 100%"
@@ -61,11 +61,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useVariablesConfiguracionStore } from '@/stores/variablesConfiguracionStore'
 
 const store = useVariablesConfiguracionStore()
-const { items, fetchItems, createItem, updateItem, deleteItem, loading } = store
+const { items, loading } = storeToRefs(store)
+const { fetchItems, createItem, updateItem, deleteItem } = store
 
 const modalVisible = ref(false)
 const form = ref({ id: null, nombre: '', valor: '', tipo: 0, estado: 1, observaciones: '' })
@@ -127,6 +129,7 @@ const handleDelete = (id) => {
 }
 
 onMounted(() => {
+  console.log('[VariablesConf] mounted, fetching')
   fetchItems()
 })
 </script>

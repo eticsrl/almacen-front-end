@@ -12,7 +12,17 @@ export const usePharmaceuticalFormStore = defineStore('pharmaceuticalForm', () =
     error.value = null
     try {
       const response = await pharmaceuticalFormService.getAll()
-      forms.value = response.data.data
+      console.log('[pharmFormStore] API response', response.data)
+      // try several paths if structure differs
+      if (response.data.data) {
+        forms.value = response.data.data
+      } else if (response.data.pharmaceuticalForms) {
+        forms.value = response.data.pharmaceuticalForms
+      } else {
+        // fallback to entire body
+        forms.value = response.data
+      }
+      console.log('[pharmFormStore] assigned forms', forms.value)
     } catch (err) {
       error.value = err
       console.error('Error al cargar formas farmacéuticas:', err)

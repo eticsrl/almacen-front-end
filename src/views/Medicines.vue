@@ -153,6 +153,11 @@ const filteredMedicines = computed(() => {
   )
 })
 
+// keep a stub for the input handler, computed property does the heavy lifting
+const filterMedicines = () => {
+  /* no-op, search is reactive and filteredMedicines updates automatically */
+}
+
 const pharmaceuticalForms = computed(() => pharmaceuticalFormStore.forms)
 const documentTypes = computed(() => documentTypeStore.documentTypes)
 
@@ -220,4 +225,4 @@ const handleDelete = (id) => {
   gap: 10px;
   margin-bottom: 20px;
 }
-</style> -->
+</style>

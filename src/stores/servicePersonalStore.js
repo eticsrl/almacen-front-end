@@ -18,9 +18,11 @@ export const useServicePersonalStore = defineStore('servicePersonal', () => {
     loading.value = true
     try {
       const response = await getAll()
-      servicePersonals.value = response.data.data
+      console.log('[servicePersonalStore] Respuesta del API:', response)
+      servicePersonals.value = response.data.data || response.data || []
+      console.log('[servicePersonalStore] Personal cargados:', servicePersonals.value)
     } catch (error) {
-      console.error('Error al obtener servicios del personal:', error)
+      console.error('[servicePersonalStore] Error al obtener servicios del personal:', error)
     } finally {
       loading.value = false
     }

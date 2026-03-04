@@ -3,6 +3,10 @@
       <el-card shadow="always">
         <div class="header">
             <h2>Forma Farmaceutica</h2>
+            <!-- Debug info -->
+            <span style="margin-left:20px; font-size:0.9em; color:#666;">
+              ({{ forms.length }} registros, loading={{loading}})
+            </span>
         <div>
             <el-button type="primary" @click="openFormModal()">Nuevo</el-button>
         </div>  
@@ -50,6 +54,7 @@
             </template>
           </el-table-column>
         </el-table>
+      <el-empty v-if="!loading && filteredForms.length === 0" description="Sin registros" />
       </el-card>
   
       <!-- Modal -->
@@ -74,18 +79,26 @@
   </template>
   
   <script setup>
-  import { ref, computed, onMounted } from 'vue'
+  import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
+  import { useRoute } from 'vue-router'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { usePharmaceuticalFormStore } from '@/stores/pharmaceuticalFormStore'
   
+  console.log('[PharmForms] setup executed')
+  import { storeToRefs } from 'pinia'
   const store = usePharmaceuticalFormStore()
-  const { forms, loading, fetchPharmaceuticalForms, createForm, updateForm, deleteForm } = store
+  // keep refs reactive
+  const { forms, loading } = storeToRefs(store)
+  const { fetchPharmaceuticalForms, createForm, updateForm, deleteForm } = store
   
   const searchTerm = ref('')
   const filteredForms = computed(() => {
-    return forms.filter(f =>
+    const arr = forms.value || []
+    const result = arr.filter(f =>
       f.formafarmaceutica.toLowerCase().includes(searchTerm.value.toLowerCase())
     )
+    console.log('[PharmForms] computed filteredForms length', result.length)
+    return result
   })
   
   const formVisible = ref(false)
@@ -100,7 +113,41 @@
   }
   
   onMounted(() => {
+    console.log('[PharmForms] mounted, fetching')
     fetchPharmaceuticalForms()
+  })
+
+
+  onUnmounted(() => {
+    console.log('[PharmForms] unmounted')
+  })
+
+  // refetch if the active route becomes this view again
+  const route = useRoute()
+  watch(
+    () => route.fullPath,
+    (path) => {
+      if (path.endsWith('/formafarmaceutica')) {
+        console.log('[PharmForms] route change to unidad, refetching')
+        fetchPharmaceuticalForms()
+      }
+    }
+  )
+
+  // debug forms mutations
+  watch(forms, (v) => {
+    console.log('[PharmForms] store forms updated', v)
+  })
+
+  // also log when fetch completes from component
+  const logFormsOnce = () => {
+    console.log('[PharmForms] current forms value', forms.value)
+  }
+  watch(forms, logFormsOnce, { immediate: true })
+
+  // also watch loading state
+  watch(loading, (val) => {
+    console.log('[PharmForms] loading changed', val)
   })
   
   const openFormModal = (form = null) => {

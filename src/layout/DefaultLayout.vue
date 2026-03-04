@@ -10,7 +10,7 @@
       <Breadcrumb />
       <TagsView />
       <div class="content">
-        <router-view />
+        <router-view :key="$route.fullPath" />
       </div>
     </div>
   </div>

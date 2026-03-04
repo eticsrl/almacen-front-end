@@ -7,7 +7,7 @@
         </div>
   
         <el-table 
-          :data="store.categories"
+          :data="categories"
           stripe border
           style="width: 100%"
           v-loading="loading"
@@ -43,12 +43,13 @@
   
   <script setup>
   import { ref, onMounted } from 'vue'
-  import { ElMessage, ElMessageBox } from 'element-plus'
-  import { useCategoryStore } from '@/stores/categoryStore.js'
+import { storeToRefs } from 'pinia'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { useCategoryStore } from '@/stores/categoryStore.js'
   
   const store = useCategoryStore()
-  const { categories, fetchCategories, createCategory, updateCategory, deleteCategory, loading } = store
-  
+  const { categories, loading } = storeToRefs(store)
+  const { fetchCategories, createCategory, updateCategory, deleteCategory } = store
   const modalVisible = ref(false)
   const form = ref({ id: null, descripcion: '' })
   const formRef = ref()
@@ -109,8 +110,8 @@
   }
   
   onMounted(() => {
+    console.log('[Categories] mounted fetch')
     store.fetchCategories()
-    
   })
   </script>
   

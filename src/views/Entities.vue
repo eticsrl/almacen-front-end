@@ -25,10 +25,15 @@
       >
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="descripcion" label="Descripción" />
+        <el-table-column prop="estado" label="Activo" width="100">
+          <template #default="{ row }">
+            <el-switch v-model="row.estado" :active-value="1" :inactive-value="0" disabled />
+          </template>
+        </el-table-column>
         <el-table-column label="Acciones" width="200">
           <template #default="scope">
             <el-button type="primary" size="small" @click="openModal(scope.row)">Editar</el-button>
-            <el-button type="danger" size="small" @click="confirmDelete(scope.row.id)">Eliminar</el-button>
+            <!--el-button type="danger" size="small" @click="confirmDelete(scope.row.id)">Eliminar</el-button-->
           </template>
         </el-table-column>
       </el-table>
@@ -49,6 +54,9 @@
         <el-form-item label="Descripción" prop="descripcion">
           <el-input v-model="form.descripcion" />
         </el-form-item>
+        <el-form-item label="Activo" prop="estado">
+          <el-switch v-model="form.estado" :active-value="1" :inactive-value="0" />
+        </el-form-item>
       </el-form>
 
       <template #footer>
@@ -61,18 +69,21 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useEntityStore } from '@/stores/entityStore'
 
 const store = useEntityStore()
-const { entities, fetchEntities, createEntity, updateEntity, deleteEntity, loading, total } = store
+const { entities, loading, total } = storeToRefs(store)
+const { fetchEntities, createEntity, updateEntity, deleteEntity } = store
 
 const search = ref('')
 const page = ref(1)
 
 const filteredEntities = computed(() => {
-  if (!search.value) return entities
-  return entities.filter(e => e.descripcion.toLowerCase().includes(search.value.toLowerCase()))
+  const arr = entities.value || []
+  if (!search.value) return arr
+  return arr.filter(e => e.descripcion.toLowerCase().includes(search.value.toLowerCase()))
 })
 
 const modalVisible = ref(false)
@@ -82,13 +93,25 @@ const formRef = ref()
 const rules = {
   descripcion: [{ required: true, message: 'Descripción requerida', trigger: 'blur' }]
 }
-
+/*
+const openModal = (item = null) => {
+  if (item) {
+    // ensure estado is numeric (backend may send "1"/"0")
+    form.value = { ...item, estado: item.estado !== undefined ? Number(item.estado) : 1 }
+  } else {
+    form.value = { id: null, nombre: '', valor: '', tipo: 0, estado: 1, observaciones: '' }
+  }
+  modalVisible.value = true
+}
+*/
 const openModal = (entity = null) => {
+  console.log('openModal called with entity:', entity)
   if (entity) {
     form.value = { ...entity }
   } else {
-    form.value = { id: null, descripcion: '' }
+    form.value = { id: null, descripcion: '',estado: 1 }
   }
+
   modalVisible.value = true
 }
 
@@ -143,6 +166,7 @@ const applyFilter = () => {
 
 onMounted(() => {
   fetchData()
+  console.log('[Entities] onMounted fetchData, entities length', entities.value)
 })
 </script>
 

@@ -6,7 +6,7 @@
       <span v-if="isOpen" class="sidebar-title">Farmacia</span>
     </div>
     <el-menu :default-active="activeMenu" router background-color="$menuBg" text-color="$menuText"
-      active-text-color="$menuActiveText">
+      active-text-color="$menuActiveText" @select="handleMenuSelect">
       <el-menu-item index="/">
         <el-icon><home-filled /></el-icon>
         <span v-if="isOpen">Dashboard</span>
@@ -178,6 +178,8 @@
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { usePermission } from '@/composables/usePermission.js'
+// prefetch for pharmaceutical forms (unidad)
+import { usePharmaceuticalFormStore } from '@/stores/pharmaceuticalFormStore'
 import {
   HomeFilled, Location, Document, Setting, Box,
   List,           // ⬅️ NUEVOS iconos
@@ -199,6 +201,14 @@ const props = defineProps({
     default: true
   }
 })
+
+// handler invoked when a menu entry is selected (index passed)
+const handleMenuSelect = (index) => {
+  if (index === '/mantenimiento/formafarmaceutica') {
+    const pharmStore = usePharmaceuticalFormStore()
+    pharmStore.fetchPharmaceuticalForms()
+  }
+}
 </script>
 
 <style scoped lang="scss">
