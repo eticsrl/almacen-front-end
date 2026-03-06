@@ -5,8 +5,9 @@
         <h2>Personal del Servicio</h2>
         <div class="filter-service">
           <label>Filtrar por Servicio:</label>
-          <el-select v-model="filterService" filterable clearable placeholder="Seleccionar servicio" style="width: 300px;">
-            <el-option v-for="doc in documentTypes" :key="doc.id" :label="doc.descripcion" :value="doc.id" />
+          <el-select v-model="filterService" filterable clearable placeholder="Seleccionar servicio"
+            style="width: 300px;">
+            <el-option v-for="doc in serviceDocumentTypes" :key="doc.id" :label="doc.descripcion" :value="doc.id" />
           </el-select>
         </div>
         <el-button type="primary" @click="openModal()">Nuevo Personal</el-button>
@@ -26,13 +27,13 @@
         </el-table-column>
         <el-table-column prop="estado" label="Estado" width="100">
           <template #default="{ row }">
-            {{ row.estado ? 'Activo' : 'Inactivo' }}
+            <el-switch v-model="row.estado" :active-value="1" :inactive-value="0" disabled />
           </template>
         </el-table-column>
         <el-table-column label="Acciones" width="160">
           <template #default="scope">
             <el-button size="small" @click="openModal(scope.row)">Editar</el-button>
-            <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">Eliminar</el-button>
+            <!--el-button size="small" type="danger" @click="handleDelete(scope.row.id)">Eliminar</el-button-->
           </template>
         </el-table-column>
       </el-table>
@@ -47,11 +48,11 @@
         </el-form-item>
         <el-form-item label="Tipo de Servicio" prop="id_service">
           <el-select v-model="form.id_service" filterable clearable placeholder="Seleccionar servicio">
-            <el-option v-for="doc in documentTypes" :key="doc.id" :label="doc.descripcion" :value="doc.id" />
+            <el-option v-for="doc in serviceDocumentTypes" :key="doc.id" :label="doc.descripcion" :value="doc.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="Estado" prop="estado">
-          <el-switch v-model="form.estado" />
+          <el-switch v-model="form.estado" :active-value="1" :inactive-value="0" />
         </el-form-item>
       </el-form>
 
@@ -84,7 +85,7 @@ const formRef = ref()
 const isSubmitting = ref(false)
 const form = ref({
   apellidos_nombres: '',
-  estado: true,
+  estado: 1,
   id_service: null
 })
 
@@ -94,27 +95,34 @@ const rules = {
     { min: 1, max: 255, message: 'Máximo 255 caracteres', trigger: 'blur' }
   ],
   id_service: [
-    { required: false, message: 'Seleccione un tipo de servicio', trigger: 'change' }
+    { required: true, message: 'Seleccione un tipo de servicio', trigger: 'change' }
   ]
 }
 
 const search = ref('')
 const filterService = ref(null)
+const serviceDocumentTypes = computed(() => {
+  return (documentTypes.value || []).filter((doc) => {
+    const categoriaId = doc?.categoria_id ?? doc?.id_categoria ?? doc?.category_id ?? doc?.categoria?.id
+    return Number(categoriaId) === 8
+  })
+})
+
 const filteredServicePersonals = computed(() => {
   let filtered = servicePersonals.value
-  
+
   // Filtrar por búsqueda de nombre
   if (search.value) {
     filtered = filtered.filter(sp =>
       sp.apellidos_nombres.toLowerCase().includes(search.value.toLowerCase())
     )
   }
-  
+
   // Filtrar por servicio
   if (filterService.value) {
     filtered = filtered.filter(sp => sp.id_service === filterService.value)
   }
-  
+
   return filtered
 })
 
@@ -127,12 +135,15 @@ onMounted(() => {
 const openModal = (servicePersonal = null) => {
   if (servicePersonal) {
     isEditing.value = true
-    form.value = { ...servicePersonal }
+    form.value = {
+      ...servicePersonal,
+      estado: servicePersonal.estado === 0 ? 0 : 1
+    }
   } else {
     isEditing.value = false
     form.value = {
       apellidos_nombres: '',
-      estado: true,
+      estado: 1,
       id_service: null
     }
   }
@@ -145,16 +156,35 @@ const handleSubmit = () => {
 
     isSubmitting.value = true
     try {
+      const payload = {
+        apellidos_nombres: (form.value.apellidos_nombres || '').trim(),
+        estado: form.value.estado === 0 ? 0 : 1,
+        id_service: form.value.id_service != null ? Number(form.value.id_service) : null
+      }
+
       if (isEditing.value) {
-        await updateServicePersonal(form.value.id, form.value)
+        await updateServicePersonal(form.value.id, payload)
         ElMessage.success('Actualizado correctamente')
       } else {
-        await createServicePersonal(form.value)
+        await createServicePersonal(payload)
         ElMessage.success('Registrado correctamente')
       }
       showModal.value = false
     } catch (error) {
-      ElMessage.error('Error al guardar')
+      console.error('Error al guardar personal de servicio:', error)
+      console.error('Response:', error.response?.data)
+
+      const backendErrors = error.response?.data?.errors
+      const firstValidationError = backendErrors
+        ? Object.values(backendErrors).flat()[0]
+        : null
+
+      const status = error.response?.status
+      ElMessage.error(
+        firstValidationError ||
+        error.response?.data?.message ||
+        (status ? `Error al guardar (HTTP ${status})` : 'Error al guardar')
+      )
     } finally {
       isSubmitting.value = false
     }

@@ -2,7 +2,7 @@
     <div class="pharmaceutical-forms">
       <el-card shadow="always">
         <div class="header">
-            <h2>Forma Farmaceutica</h2>
+            <h2>Unidad de Medida</h2>
             <!-- Debug info -->
             <span style="margin-left:20px; font-size:0.9em; color:#666;">
               ({{ forms.length }} registros, loading={{loading}})
@@ -16,7 +16,7 @@
             
                     <el-input
                     v-model="searchTerm"
-                    placeholder="Buscar forma farmacéutica"
+                    placeholder="Buscar unidad de medida"
                     clearable
                     class="search-input"
                     @input="filterForms"
@@ -31,7 +31,7 @@
           v-loading="loading"
         >
           <el-table-column prop="id" label="ID" width="80" />
-          <el-table-column prop="formafarmaceutica" label="Forma Farmacéutica" />
+          <el-table-column prop="formafarmaceutica" label="Unidad de Medida" />
   
           <el-table-column label="Acciones" width="180">
             <template #default="scope">
@@ -43,14 +43,14 @@
               >
                 Editar
               </el-button>
-              <el-button
+              <!--el-button
                 size="small"
                 type="danger"
                
                 @click="handleDelete(scope.row.id)"
               >
                 Eliminar
-              </el-button>
+              </el-button-->
             </template>
           </el-table-column>
         </el-table>
@@ -59,7 +59,7 @@
   
       <!-- Modal -->
       <el-dialog
-        :title="formData.id ? 'Editar forma farmacéutica' : 'Nueva forma farmacéutica'"
+        :title="formData.id ? 'Editar unidad de medida' : 'Nueva unidad de medida'"
         v-model="formVisible"
         width="400px"
         @close="resetForm"    

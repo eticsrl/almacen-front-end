@@ -5,7 +5,7 @@ import userService from '@/services/user.js'
 import router from '@/router'
 
 export const useUserStore = defineStore('user', () => {
-  const user = ref(null)
+  const user = ref(JSON.parse(localStorage.getItem('user') || 'null'))
   const token = ref(localStorage.getItem('token') || '')
   const loading = ref(false)
 

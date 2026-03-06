@@ -163,7 +163,7 @@
         <el-menu-item-group>
           <el-menu-item index="/mantenimiento/categorias">Categorias</el-menu-item>
           <el-menu-item index="/mantenimiento/tipodocumentos">Tipo Documentos</el-menu-item>
-          <el-menu-item index="/mantenimiento/medicamentos">Productos</el-menu-item>
+          <el-menu-item index="/mantenimiento/productos">Productos</el-menu-item>
           <el-menu-item index="/mantenimiento/formafarmaceutica">Unidad</el-menu-item>
           <el-menu-item index="/mantenimiento/servicios-personal">Personal del Servicio</el-menu-item>
           <el-menu-item v-if="hasPermission('manage_entities')" index="/mantenimiento/entidades">Entidades</el-menu-item>

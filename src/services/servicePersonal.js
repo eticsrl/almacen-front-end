@@ -11,8 +11,30 @@ export const create = (payload) => {
 }
 
 // Actualizar un service_personal existente
-export const update = (id, payload) => {
-  return api.put(`/servicePersonals/${id}`, payload)
+export const update = async (id, payload) => {
+  try {
+    return await api.put(`/servicePersonals/${id}`, payload)
+  } catch (error) {
+    const status = error?.response?.status
+    const isNetworkLikeError = !error?.response
+
+    const tryPostMethodOverride = async () => {
+      return api.post(`/servicePersonals/${id}`, {
+        ...payload,
+        _method: 'PUT'
+      })
+    }
+
+    if (isNetworkLikeError) {
+      return tryPostMethodOverride()
+    }
+
+    if (status === 404 || status === 405) {
+      return tryPostMethodOverride()
+    }
+
+    throw error
+  }
 }
 
 // Eliminar (anular) un service_personal

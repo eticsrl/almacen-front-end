@@ -150,7 +150,7 @@ const routes = [
           
           { path: 'categorias', name: 'Categorias', component: Categorias },
           { path: 'tipodocumentos', name: 'TipoDocumentos', component: TipoDocumentos },
-          { path: 'medicamentos', name: 'Medicamentos', component: Medicamentos },
+          { path: 'productos', name: 'Productos', component: Medicamentos },
           { path: 'formafarmaceutica', name: 'FormaFarmaceutica', component: FormaFarmaceutica },
           { path: 'servicios-personal', name: 'ServiciosPersonal', component: ServicePersonalsView },
           { path: 'entidades', name: 'Entidades', component: Entities, meta: { requiredPermission: 'manage_entities' } },

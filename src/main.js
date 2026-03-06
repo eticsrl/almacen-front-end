@@ -13,15 +13,15 @@ app.use(store)
 app.use(router)
 app.use(ElementPlus)
 
-// Cargar usuario al iniciar la aplicación
+// Actualizar datos del usuario si hay token (refrescar permisos/roles)
 const userStore = useUserStore()
 const token = localStorage.getItem('token')
 
-if (token && !userStore.user) {
+if (token) {
   userStore.fetchUser().then(() => {
-    console.log('Datos del usuario cargados:', userStore.user)
+    console.log('Datos del usuario actualizados:', userStore.user)
   }).catch(() => {
-    console.log('No se pudo cargar el usuario')
+    console.log('No se pudo refrescar datos del usuario')
   })
 }
 

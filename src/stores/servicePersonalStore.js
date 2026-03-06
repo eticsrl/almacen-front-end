@@ -14,12 +14,24 @@ export const useServicePersonalStore = defineStore('servicePersonal', () => {
   const currentServicePersonal = ref(null)
   const errors = ref(null)
 
+  const normalizeServicePersonal = (servicePersonal) => {
+    if (!servicePersonal || typeof servicePersonal !== 'object') return null
+
+    return {
+      ...servicePersonal,
+      estado: Number(servicePersonal?.estado) === 0 ? 0 : 1,
+      id_service: servicePersonal?.id_service != null ? Number(servicePersonal.id_service) : null
+    }
+  }
+
   const fetchServicePersonals = async () => {
     loading.value = true
     try {
       const response = await getAll()
       console.log('[servicePersonalStore] Respuesta del API:', response)
-      servicePersonals.value = response.data.data || response.data || []
+      const rawData = response.data?.data || response.data || []
+      const list = Array.isArray(rawData) ? rawData : []
+      servicePersonals.value = list.map(normalizeServicePersonal).filter(Boolean)
       console.log('[servicePersonalStore] Personal cargados:', servicePersonals.value)
     } catch (error) {
       console.error('[servicePersonalStore] Error al obtener servicios del personal:', error)
@@ -32,7 +44,7 @@ export const useServicePersonalStore = defineStore('servicePersonal', () => {
     loading.value = true
     try {
       const response = await getById(id)
-      currentServicePersonal.value = response.data.data
+      currentServicePersonal.value = normalizeServicePersonal(response.data?.data || response.data)
     } catch (error) {
       console.error('Error al obtener servicio del personal:', error)
     } finally {
@@ -44,7 +56,10 @@ export const useServicePersonalStore = defineStore('servicePersonal', () => {
     errors.value = null
     try {
       const response = await create(payload)
-      servicePersonals.value.push(response.data.data)
+      const created = normalizeServicePersonal(response.data?.data || response.data)
+      if (created) {
+        servicePersonals.value.push(created)
+      }
       return response
     } catch (error) {
       if (error.response && error.response.status === 422) {
@@ -58,9 +73,14 @@ export const useServicePersonalStore = defineStore('servicePersonal', () => {
     errors.value = null
     try {
       const response = await update(id, payload)
-      const index = servicePersonals.value.findIndex(sp => sp.id === id)
+      const updated = normalizeServicePersonal(response.data?.data || response.data)
+      const index = servicePersonals.value.findIndex(sp => Number(sp.id) === Number(id))
       if (index !== -1) {
-        servicePersonals.value[index] = response.data.data
+        servicePersonals.value[index] = updated || {
+          ...servicePersonals.value[index],
+          ...payload,
+          id: servicePersonals.value[index].id
+        }
       }
       return response
     } catch (error) {

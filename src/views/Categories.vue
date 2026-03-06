@@ -19,7 +19,7 @@
           <el-table-column label="Acciones" width="200">
             <template #default="scope">
               <el-button type="primary" size="small" @click="openModal(scope.row)">Editar</el-button>
-              <el-button type="danger" size="small" @click="handleDelete(scope.row.id)">Eliminar</el-button>
+              <!--el-button type="danger" size="small" @click="handleDelete(scope.row.id)">Eliminar</el-button-->
             </template>
           </el-table-column>
         </el-table>

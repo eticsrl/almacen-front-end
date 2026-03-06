@@ -2,8 +2,8 @@
   <div class="entities-page">
     <el-card shadow="always">
       <div class="header">
-        <h2>Entidades de Almacén</h2>
-        <el-button type="primary" @click="openModal()">+ Nueva entidad</el-button>
+        <h2>Almacenes</h2>
+        <el-button type="primary" @click="openModal()">+ Nuevo almacén</el-button>
       </div>
 
       <div class="filter-container">
